@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Recovery Pro - Recover Lost Sales Automatically</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Landing Page */
+        .landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #ffffff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 60px;
+        }
+
+        .hero-text {
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+
+        .hero-text h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            line-height: 1.3;
+            margin-bottom: 25px;
+            color: #ffffff;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 0;
+        }
+
+        .cta-button:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .stats-banner {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            margin-top: 80px;
+            padding: 40px;
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 10px;
+        }
+
+        /* Auth Forms */
+        .auth-container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 60px;
+            background: #111;
+            border: 1px solid #222;
+        }
+
+        .auth-container h2 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 50px;
+            letter-spacing: 0.1em;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 18px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .submit-button {
+            width: 100%;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 18px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            background: #e0e0e0;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .auth-switch a {
+            color: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            padding: 40px 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #222;
+            margin-bottom: 50px;
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .logout-button {
+            background: none;
+            color: #888;
+            border: 1px solid #333;
+            padding: 12px 30px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-button:hover {
+            color: #ffffff;
+            border-color: #666;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1px;
+            background: #222;
+            margin-bottom: 60px;
+            border: 1px solid #222;
+        }
+
+        .stat-card {
+            background: #0a0a0a;
+            padding: 40px;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .stat-card .value {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #ffffff;
+        }
+
+        .dashboard-content {
+            background: #111;
+            border: 1px solid #222;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #222;
+        }
+
+        .tab {
+            padding: 25px 40px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 50px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .section-description {
+            color: #888;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .api-key-container {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .api-key-label {
+            color: #666;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 15px;
+        }
+
+        .api-key-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #ffffff;
+            word-break: break-all;
+            padding-right: 100px;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: none;
+            color: #888;
+            border: 1px solid #333;
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            color: #ffffff;
+            border-color: #666;
+        }
+
+        .code-block {
+            background: #000000;
+            border: 1px solid #222;
+            padding: 30px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            margin: 30px 0;
+            color: #a0a0a0;
+        }
+
+        .platform-selector {
+            display: flex;
+            gap: 1px;
+            margin: 40px 0;
+            background: #222;
+            border: 1px solid #222;
+        }
+
+        .platform-button {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            background: #111;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+
+        .platform-button.active {
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+
+        .integration-step {
+            margin: 50px 0;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .integration-step h4 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            letter-spacing: 0.05em;
+        }
+
+        .integration-step p {
+            color: #888;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .test-section {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            padding: 40px;
+            margin: 40px 0;
+        }
+
+        .test-input {
+            width: 100%;
+            padding: 18px;
+            background: #000000;
+            border: 1px solid #222;
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .test-input:focus {
+            outline: none;
+            border-color: #444;
+        }
+
+        .activity-list {
+            margin-top: 30px;
+        }
+
+        .activity-item {
+            padding: 25px 0;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-email {
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .activity-meta {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 0.85rem;
+            text-align: right;
+        }
+
+        .alert {
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 3px solid;
+        }
+
+        .alert-success {
+            background: #0a1a0a;
+            border-color: #2a5a2a;
+            color: #6a9a6a;
+        }
+
+        .alert-error {
+            background: #1a0a0a;
+            border-color: #5a2a2a;
+            color: #9a6a6a;
+        }
+
+        .alert-info {
+            background: #0a0a1a;
+            border-color: #2a2a5a;
+            color: #6a6a9a;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+
+            .hero-text h2 {
+                font-size: 1.8rem;
+            }
+
+            .stats-banner {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+
+            .tab-content {
+                padding: 30px 20px;
+            }
+
+            .platform-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LANDING PAGE -->
+    <div id="landing-page" class="page active">
+        <div class="container landing">
+            <div class="logo">CART RECOVERY PRO</div>
+            <div class="tagline">LEFT LIBERTY INTELLIGENCE</div>
+            
+            <div class="hero-text">
+                <h2>Recover Lost Sales While You Sleep</h2>
+                <p>Automatically send personalized recovery emails to customers who abandon their carts. No templates. No spam. Just results.</p>
+            </div>
+
+            <button class="cta-button" onclick="showSignup()">START RECOVERING REVENUE</button>
+
+            <div class="stats-banner">
+                <div class="stat">
+                    <div class="stat-value">15-20%</div>
+                    <div class="stat-label">Average Recovery Rate</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2 MIN</div>
+                    <div class="stat-label">Setup Time</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Automated</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGNUP PAGE -->
+    <div id="signup-page" class="page">
+        <div class="auth-container">
+            <h2>CREATE ACCOUNT</h2>
+            <form id="signup-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label>PASSWORD</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label>STORE NAME</label>
+                    <input type="text" id="signup-store-name" required>
+                </div>
+                <div class="form-group">
+                    <label>WEBSITE</label>
+                    <input type="url" id="signup-website" required>
+                </div>
+                <button type="submit" class="submit-button">CREATE ACCOUNT</button>
+            </form>
+            <div class="auth-switch">
+                Already have an account? <a onclick="showLogin()">Log In</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="login-page" class="page">
+        <div class="auth-container">
+            <h2>LOG IN</h2>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label>PASSWORD</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="submit-button">LOG IN</button>
+            </form>
+            <div class="auth-switch">
+                Don't have an account? <a onclick="showSignup()">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard-page" class="page">
+        <div class="container dashboard">
+            <div class="dashboard-header">
+                <div class="dashboard-title">DASHBOARD</div>
+                <button class="logout-button" onclick="handleLogout()">LOGOUT</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Emails This Month</h3>
+                    <div class="value" id="stat-emails-sent">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Sent Today</h3>
+                    <div class="value" id="stat-today">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Customers</h3>
+                    <div class="value" id="stat-customers">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Revenue Recovered</h3>
+                    <div class="value" id="stat-revenue">$0</div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('overview')">OVERVIEW</button>
+                    <button class="tab" onclick="switchTab('integration')">INTEGRATION</button>
+                    <button class="tab" onclick="switchTab('activity')">ACTIVITY</button>
+                    <button class="tab" onclick="switchTab('settings')">SETTINGS</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="overview-tab" class="tab-content active">
+                    <div class="section-title">API KEY</div>
+                    <p class="section-description">Use this key to connect your store. Keep it confidential.</p>
+                    
+                    <div class="api-key-container">
+                        <div class="api-key-label">YOUR API KEY</div>
+                        <div class="api-key-display" id="api-key-display">Loading...</div>
+                        <button class="copy-button" onclick="copyApiKey()">COPY</button>
+                    </div>
+
+                    <div class="test-section">
+                        <div class="section-title">TEST INTEGRATION</div>
+                        <p class="section-description">Verify your setup by sending a test email.</p>
+                        <input type="email" class="test-input" id="test-email" placeholder="Enter email address">
+                        <button class="cta-button" onclick="sendTestEmail()">SEND TEST EMAIL</button>
+                        <div id="test-result"></div>
+                    </div>
+                </div>
+
+                <!-- Integration Tab -->
+                <div id="integration-tab" class="tab-content">
+                    <div class="section-title">INTEGRATION GUIDE</div>
+                    <p class="section-description">Select your platform and follow the instructions to connect your store.</p>
+
+                    <div class="platform-selector">
+                        <button class="platform-button active" onclick="selectPlatform('shopify')">SHOPIFY</button>
+                        <button class="platform-button" onclick="selectPlatform('woocommerce')">WOOCOMMERCE</button>
+                        <button class="platform-button" onclick="selectPlatform('custom')">CUSTOM</button>
+                    </div>
+
+                    <div id="shopify-integration" class="integration-content">
+                        <div class="integration-step">
+                            <div class="step-number">1</div>
+                            <h4>Add Tracking Code</h4>
+                            <p>In Shopify Admin, go to Online Store → Themes → Actions → Edit Code</p>
+                            <p>Find theme.liquid and add this code before &lt;/body&gt;:</p>
+                            <div class="code-block" id="shopify-code">Loading...</div>
+                            <button class="copy-button" onclick="copyCode('shopify-code')">COPY CODE</button>
+                        </div>
+
+                        <div class="integration-step">
+                            <div class="step-number">2</div>
+                            <h4>Save and Test</h4>
+                            <p>Save your changes and test by abandoning a cart on your store.</p>
+                        </div>
+                    </div>
+
+                    <div id="woocommerce-integration" class="integration-content hidden">
+                        <div class="integration-step">
+                            <div class="step-number">1</div>
+                            <h4>Install Code Snippets Plugin</h4>
+                            <p>In WordPress, install the "Code Snippets" plugin from the plugin directory.</p>
+                        </div>
+
+                        <div class="integration-step">
+                            <div class="step-number">2</div>
+                            <h4>Add Tracking Code</h4>
+                            <p>Create a new snippet and paste this code:</p>
+                            <div class="code-block" id="woocommerce-code">Loading...</div>
+                            <button class="copy-button" onclick="copyCode('woocommerce-code')">COPY CODE</button>
+                        </div>
+
+                        <div class="integration-step">
+                            <div class="step-number">3</div>
+                            <h4>Activate</h4>
+                            <p>Save and activate the snippet, then test with an abandoned cart.</p>
+                        </div>
+                    </div>
+
+                    <div id="custom-integration" class="integration-content hidden">
+                        <div class="integration-step">
+                            <div class="step-number">1</div>
+                            <h4>Add JavaScript</h4>
+                            <p>Add this code to your checkout page:</p>
+                            <div class="code-block" id="custom-code">Loading...</div>
+                            <button class="copy-button" onclick="copyCode('custom-code')">COPY CODE</button>
+                        </div>
+
+                        <div class="integration-step">
+                            <div class="step-number">2</div>
+                            <h4>Customize</h4>
+                            <p>Modify the getCartData() function to match your site's structure.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Tab -->
+                <div id="activity-tab" class="tab-content">
+                    <div class="section-title">RECENT ACTIVITY</div>
+                    <div class="activity-list" id="activity-list">
+                        <div class="loading">LOADING</div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="section-title">ACCOUNT SETTINGS</div>
+                    
+                    <div class="form-group">
+                        <label>STORE NAME</label>
+                        <input type="text" id="settings-store-name" class="test-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>WEBSITE</label>
+                        <input type="url" id="settings-website" class="test-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>EMAIL</label>
+                        <input type="email" id="settings-email" class="test-input">
+                    </div>
+
+                    <button class="cta-button" onclick="updateSettings()">SAVE CHANGES</button>
+
+                    <div style="height: 60px;"></div>
+                    <div style="border-top: 1px solid #222; padding-top: 60px;">
+                        <div class="section-title" style="color: #888;">DANGER ZONE</div>
+                        <div class="alert alert-error">
+                            Regenerating your API key will break existing integrations.
+                        </div>
+                        <button class="logout-button" onclick="regenerateApiKey()">REGENERATE API KEY</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SUPABASE CONFIG
+        const SUPABASE_URL = 'https://zhnzumeybvyiqjpvuyoa.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpobnp1bWV5YnZ5aXFqcHZ1eW9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NjQ1OTQsImV4cCI6MjA4MzE0MDU5NH0.HIhOB8iOzC2pjKlYSJ_2TXHG-kT0sj_HblE-1_8YgRo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const WEBHOOK_URL = 'https://n8n.leftliberty.com/webhook/abandoned-cart';
+
+        let currentUser = null;
+        let currentPlatform = 'shopify';
+
+        // Initialize
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showDashboard();
+            }
+        }
+
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function showSignup() {
+            showPage('signup-page');
+        }
+
+        function showLogin() {
+            showPage('login-page');
+        }
+
+        function showDashboard() {
+            showPage('dashboard-page');
+            loadDashboardData();
+        }
+
+        // Signup
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const storeName = document.getElementById('signup-store-name').value;
+            const website = document.getElementById('signup-website').value;
+
+            try {
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                });
+
+                if (authError) throw authError;
+
+                const apiKey = 'ck_' + generateRandomString(32);
+
+                const { error: profileError } = await supabase
+                    .from('user_profiles')
+                    .insert([{
+                        user_id: authData.user.id,
+                        email: email,
+                        store_name: storeName,
+                        website: website,
+                        api_key: apiKey,
+                        created_at: new Date().toISOString()
+                    }]);
+
+                if (profileError) throw profileError;
+
+                alert('Account created. Check your email to verify.');
+                showLogin();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) throw error;
+
+                currentUser = data.user;
+                showDashboard();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Logout
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            showPage('landing-page');
+        }
+
+        // Load Dashboard Data
+        async function loadDashboardData() {
+            try {
+                const { data: profile, error: profileError } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (profileError) throw profileError;
+
+                document.getElementById('api-key-display').textContent = profile.api_key;
+
+                const { data: emails, error: emailsError } = await supabase
+                    .from('abandoned_cart_emails')
+                    .select('*')
+                    .eq('client_email', profile.email);
+
+                if (!emailsError && emails) {
+                    const totalEmails = emails.length;
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayEmails = emails.filter(e => e.email_sent_at?.startsWith(today)).length;
+                    const uniqueCustomers = new Set(emails.map(e => e.email)).size;
+                    const totalRevenue = emails.reduce((sum, e) => sum + (parseFloat(e.cart_value) || 0), 0);
+                    const recoveredRevenue = (totalRevenue * 0.15).toFixed(2);
+
+                    document.getElementById('stat-emails-sent').textContent = totalEmails;
+                    document.getElementById('stat-today').textContent = todayEmails;
+                    document.getElementById('stat-customers').textContent = uniqueCustomers;
+                    document.getElementById('stat-revenue').textContent = '$' + recoveredRevenue;
+
+                    loadActivity(emails);
+                }
+
+                generateIntegrationCode(profile);
+
+                document.getElementById('settings-store-name').value = profile.store_name;
+                document.getElementById('settings-website').value = profile.website;
+                document.getElementById('settings-email').value = profile.email;
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load Activity
+        function loadActivity(emails) {
+            const activityList = document.getElementById('activity-list');
+            
+            if (!emails || emails.length === 0) {
+                activityList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">—</div><div>No emails sent yet</div></div>';
+                return;
+            }
+
+            const sortedEmails = emails.sort((a, b) => new Date(b.email_sent_at) - new Date(a.email_sent_at));
+            const recentEmails = sortedEmails.slice(0, 20);
+            
+            activityList.innerHTML = recentEmails.map(email => {
+                const date = new Date(email.email_sent_at);
+                const timeAgo = getTimeAgo(date);
+                const maskedEmail = maskEmail(email.email);
+
+                return `
+                    <div class="activity-item">
+                        <div>
+                            <div class="activity-email">${maskedEmail}</div>
+                            <div class="activity-meta">$${email.cart_value}</div>
+                        </div>
+                        <div class="activity-time">${timeAgo}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Generate Integration Code
+        function generateIntegrationCode(profile) {
+            const apiKey = profile.api_key;
+            const clientEmail = profile.email;
+            const clientName = profile.store_name;
+            const clientWebsite = profile.website;
+
+            const shopifyCode = `<script>
+(function() {
+  var cartData = {{ cart | json }};
+  var customerData = {{ customer | json }};
+  
+  if (cartData.item_count > 0) {
+    window.addEventListener('beforeunload', function() {
+      fetch('${WEBHOOK_URL}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          api_key: '${apiKey}',
+          client_email: '${clientEmail}',
+          client_name: '${clientName}',
+          client_website: '${clientWebsite}',
+          email: customerData?.email || 'guest@unknown.com',
+          customer_name: (customerData?.first_name || '') + ' ' + (customerData?.last_name || ''),
+          cart_value: cartData.total_price / 100,
+          products: cartData.items.map(item => ({
+            name: item.title,
+            price: item.price / 100,
+            quantity: item.quantity
+          })),
+          cart_url: window.location.origin + '/cart'
+        })
+      }).catch(err => console.log('Error:', err));
+    });
+  }
+})();
+</script>`;
+
+            const woocommerceCode = `<?php
+add_action('woocommerce_cart_updated', 'send_cart_webhook');
+
+function send_cart_webhook() {
+    if (WC()->cart->get_cart_contents_count() > 0) {
+        $customer = WC()->customer;
+        $cart_items = array();
+        
+        foreach (WC()->cart->get_cart() as $item) {
+            $cart_items[] = array(
+                'name' => $item['data']->get_name(),
+                'price' => $item['data']->get_price(),
+                'quantity' => $item['quantity']
+            );
+        }
+        
+        $data = array(
+            'api_key' => '${apiKey}',
+            'client_email' => '${clientEmail}',
+            'client_name' => '${clientName}',
+            'client_website' => '${clientWebsite}',
+            'email' => $customer->get_email(),
+            'customer_name' => $customer->get_first_name() . ' ' . $customer->get_last_name(),
+            'cart_value' => WC()->cart->get_cart_contents_total(),
+            'products' => $cart_items,
+            'cart_url' => wc_get_cart_url()
+        );
+        
+        wp_remote_post('${WEBHOOK_URL}', array(
+            'headers' => array('Content-Type' => 'application/json'),
+            'body' => json_encode($data),
+            'timeout' => 5
+        ));
+    }
+}`;
+
+            const customCode = `<script>
+function trackCart() {
+  const data = {
+    api_key: '${apiKey}',
+    client_email: '${clientEmail}',
+    client_name: '${clientName}',
+    client_website: window.location.origin,
+    email: document.getElementById('customer-email')?.value || 'guest@unknown.com',
+    customer_name: document.getElementById('customer-name')?.value || 'Guest',
+    cart_value: parseFloat(document.getElementById('cart-total')?.textContent || 0),
+    products: getCartItems(),
+    cart_url: window.location.origin + '/cart'
+  };
+  
+  window.addEventListener('beforeunload', () => {
+    navigator.sendBeacon('${WEBHOOK_URL}', JSON.stringify(data));
+  });
+}
+
+function getCartItems() {
+  const items = [];
+  document.querySelectorAll('.cart-item').forEach(item => {
+    items.push({
+      name: item.querySelector('.product-name')?.textContent || 'Product',
+      price: parseFloat(item.querySelector('.product-price')?.textContent || 0),
+      quantity: parseInt(item.querySelector('.product-quantity')?.value || 1)
+    });
+  });
+  return items;
+}
+
+trackCart();
+</script>`;
+
+            document.getElementById('shopify-code').textContent = shopifyCode;
+            document.getElementById('woocommerce-code').textContent = woocommerceCode;
+            document.getElementById('custom-code').textContent = customCode;
+        }
+
+        // Copy Functions
+        function copyApiKey() {
+            const apiKey = document.getElementById('api-key-display').textContent;
+            navigator.clipboard.writeText(apiKey);
+            
+            const button = document.querySelector('.api-key-container .copy-button');
+            const originalText = button.textContent;
+            button.textContent = 'COPIED';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        function copyCode(elementId) {
+            const code = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(code);
+            alert('Code copied to clipboard');
+        }
+
+        // Send Test Email
+        async function sendTestEmail() {
+            const testEmail = document.getElementById('test-email').value;
+            if (!testEmail) {
+                alert('Enter an email address');
+                return;
+            }
+
+            try {
+                const { data: profile } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        api_key: profile.api_key,
+                        client_email: profile.email,
+                        client_name: profile.store_name,
+                        client_website: profile.website,
+                        email: testEmail,
+                        customer_name: 'Test Customer',
+                        cart_value: 99.99,
+                        products: [{name: 'Test Product', price: 99.99, quantity: 1}],
+                        cart_url: profile.website + '/cart/test'
+                    })
+                });
+
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('test-result');
+                if (result.success || response.ok) {
+                    resultDiv.innerHTML = '<div class="alert alert-success">Test email sent successfully</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="alert alert-error">Error: ' + (result.error || 'Failed to send') + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('test-result').innerHTML = '<div class="alert alert-error">Error: ' + error.message + '</div>';
+            }
+        }
+
+        // Switch Tab
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Select Platform
+        function selectPlatform(platform) {
+            currentPlatform = platform;
+            
+            document.querySelectorAll('.platform-button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.integration-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(platform + '-integration').classList.remove('hidden');
+        }
+
+        // Update Settings
+        async function updateSettings() {
+            try {
+                const { error } = await supabase
+                    .from('user_profiles')
+                    .update({
+                        store_name: document.getElementById('settings-store-name').value,
+                        website: document.getElementById('settings-website').value,
+                        email: document.getElementById('settings-email').value,
+                    })
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                alert('Settings updated');
+                loadDashboardData();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Regenerate API Key
+        async function regenerateApiKey() {
+            if (!confirm('This will break your existing integration. Continue?')) {
+                return;
+            }
+
+            try {
+                const newApiKey = 'ck_' + generateRandomString(32);
+
+                const { error } = await supabase
+                    .from('user_profiles')
+                    .update({ api_key: newApiKey })
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                alert('New API key generated');
+                loadDashboardData();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Helper Functions
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function maskEmail(email) {
+            const [local, domain] = email.split('@');
+            const maskedLocal = local[0] + '***' + local[local.length - 1];
+            return maskedLocal + '@' + domain;
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            return Math.floor(seconds / 86400) + 'd ago';
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
